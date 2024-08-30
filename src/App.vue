@@ -8,7 +8,7 @@
         </fieldset>
     </form>
     <ul v-if="tasks">
-        <li v-for="task in sortedTasks()" :key="task.date"
+        <li v-for="task in sortedTasks" :key="task.date"
             :style="{ backgroundColor: task.completed ? 'lightgray' : 'lightblue' }">
             <input type="checkbox" v-model="task.completed" :id="task.date" />
             <label :for="task.date" :style="{ textDecoration: task.completed ? 'line-through' : '' }">
@@ -22,22 +22,28 @@
             <input type="checkbox" v-model="hideCompletedTasks">
             Masquer les tâches complétées
         </label>
+        <p v-if="remainingTasks>0">{{ remainingTasks }} tâche{{ remainingTasks > 1 ? "s" : "" }} à faire</p>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 const task = ref('')
 const newTask = ref('')
 const hideCompletedTasks = ref(false)
 
-const sortedTasks = () => {
+const sortedTasks = computed(() => {
+    console.log("demo")
     const sortedTasks = tasks.value.toSorted((a, b) => a.completed > b.completed ? 1 : -1)
     if (hideCompletedTasks.value) {
         return sortedTasks.filter(task => task.completed === false);
     }
     return sortedTasks;
-}
+})
+
+const remainingTasks = computed(() =>{
+    return tasks.value.filter(task => task.completed === false).length;
+})
 
 const addTask = () => {
     tasks.value.push({
@@ -73,7 +79,6 @@ li {
     align-items: center;
     border-radius: 10px;
     height: 50px;
-    background-color: bisque;
     margin: 10px;
 }
 
